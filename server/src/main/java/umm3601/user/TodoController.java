@@ -32,6 +32,11 @@ import umm3601.Controller;
 
 public class TodoController implements Controller {
   private static final String API_TODOS = "/api/todos";
+  static final String OWNER_KEY = "owner";
+  static final String STATUS_KEY = "status";
+  static final String BODY_KEY = "body";
+  static final String CATEGORY_KEY = "category";
+
 
   private final JacksonMongoCollection<Todo> todoCollection;
 
