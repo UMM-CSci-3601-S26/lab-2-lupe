@@ -28,4 +28,9 @@ public class Todo {
   public int hashCode() {
     return _id.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return body;
+  }
 }
