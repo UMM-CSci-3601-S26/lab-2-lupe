@@ -82,6 +82,7 @@ public class TodoController implements Controller {
     ctx.json(matchingTodos);
 
     ctx.status(HttpStatus.OK);
+
   }
 
   private Bson constructFilter(Context ctx) {

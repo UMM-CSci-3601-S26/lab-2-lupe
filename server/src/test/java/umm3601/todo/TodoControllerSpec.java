@@ -200,6 +200,21 @@ public class TodoControllerSpec {
 
     assertEquals("The requested todo was not found", exception.getMessage());
   }
+
+  @Test
+  void getTodosWithInvalidLimit() throws IOException {
+    when(ctx.queryParam("limit")).thenReturn("not-a-number");
+
+    Throwable exception = assertThrows(BadRequestResponse.class, () -> {
+      todoController.getTodos(ctx);
+    });
+
+    assertEquals("The limit query parameter must be a non-negative integer.", exception.getMessage());
+  }
+
+
+
+
+
+
 }
-
-
