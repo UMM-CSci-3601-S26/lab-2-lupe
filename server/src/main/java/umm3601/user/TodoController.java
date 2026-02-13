@@ -36,6 +36,7 @@ public class TodoController implements Controller {
   static final String STATUS_KEY = "status";
   static final String BODY_KEY = "body";
   static final String CATEGORY_KEY = "category";
+  static final String LIMIT_KEY = "limit";
 
 
   private final JacksonMongoCollection<Todo> todoCollection;
@@ -67,9 +68,14 @@ public class TodoController implements Controller {
   public void getTodos(Context ctx) {
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
+    int limit = ctx.queryParamAsClass(LIMIT_KEY, Integer.class).getOrDefault(0);
+
+    if (limit < 0) {
+      throw new BadRequestResponse("The limit query parameter must be a non-negative integer.");
+    }
 
      ArrayList<Todo> matchingTodos = todoCollection
-    .find(combinedFilter)
+    .find(combinedFilter).limit(limit)
     .sort(sortingOrder)
     .into(new ArrayList<>());
 
