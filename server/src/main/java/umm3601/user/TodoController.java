@@ -68,14 +68,19 @@ public class TodoController implements Controller {
   public void getTodos(Context ctx) {
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
-    int limit = ctx.queryParamAsClass(LIMIT_KEY, Integer.class).getOrDefault(0);
+    int limit;
 
-    if (limit < 0) {
+    try {
+      limit = ctx.queryParamAsClass(LIMIT_KEY, Integer.class)
+      .check(it -> it >= 0, "The limit query parameter must be a non-negative integer.")
+      .get();
+    } catch (Exception e) {
       throw new BadRequestResponse("The limit query parameter must be a non-negative integer.");
     }
 
      ArrayList<Todo> matchingTodos = todoCollection
-    .find(combinedFilter).limit(limit)
+    .find(combinedFilter)
+    .limit(limit)
     .sort(sortingOrder)
     .into(new ArrayList<>());
 
