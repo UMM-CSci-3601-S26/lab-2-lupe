@@ -28,6 +28,7 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
+
 import umm3601.Controller;
 
 public class TodoController implements Controller {
@@ -66,26 +67,27 @@ public class TodoController implements Controller {
   }
 
   public void getTodos(Context ctx) {
-    Bson combinedFilter = constructFilter(ctx);
+    Bson filter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
-    int limit;
+    Integer limit = 0;
 
-    try {
-      limit = ctx.queryParamAsClass(LIMIT_KEY, Integer.class)
-      .check(it -> it >= 0, "The limit query parameter must be a non-negative integer.")
-      .get();
-    } catch (Exception e) {
-      throw new BadRequestResponse("The limit query parameter must be a non-negative integer.");
+    if (ctx.queryParamMap().containsKey(LIMIT_KEY)) {
+        try {
+            limit = Integer.parseInt(ctx.queryParam(LIMIT_KEY));
+            if (limit < 0) {
+                throw new BadRequestResponse("Limit must be a non-negative integer");
+            }
+        } catch (NumberFormatException e) {
+            throw new BadRequestResponse("Limit must be a non-negative integer");
+        }
     }
 
-     ArrayList<Todo> matchingTodos = todoCollection
-    .find(combinedFilter)
-    .limit(limit)
-    .sort(sortingOrder)
-    .into(new ArrayList<>());
+    List<Todo> matchingTodosList = todoCollection.find(filter)
+      .sort(sortingOrder)
+      .limit(limit)
+      .into(new ArrayList<>());
 
-    ctx.json(matchingTodos);
-
+    ctx.json(matchingTodosList);
     ctx.status(HttpStatus.OK);
   }
 
@@ -114,5 +116,4 @@ public class TodoController implements Controller {
     server.get(API_TODOS, this::getTodos);
     server.get(API_TODOS + "/{id}", this::getTodo);
   }
-
 }

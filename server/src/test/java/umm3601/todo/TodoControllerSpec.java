@@ -202,26 +202,27 @@ public class TodoControllerSpec {
   }
 
   @Test
-  void getTodosWithStringLimit() throws IOException {
-    String badLimit = "bad";
-    when(ctx.queryParam("limit")).thenReturn(badLimit);
+  void getTodosWithNonNumericLimitThrowsError() throws IOException {
+    when(ctx.queryParamMap()).thenReturn(Map.of("limit", List.of("abc")));
+    when(ctx.queryParam("limit")).thenReturn("abc");
 
-    Throwable exception = assertThrows(BadRequestResponse.class, () -> {
-      todoController.getTodos(ctx);
-    });
+    BadRequestResponse exception = assertThrows(
+      BadRequestResponse.class,
+      () -> todoController.getTodos(ctx));
 
-    assertEquals("The limit query parameter must be a non-negative integer.", exception.getMessage());
+    assertEquals("Limit must be a non-negative integer", exception.getMessage());
   }
 
   @Test
   void getTodosWithNegativeLimit() throws IOException {
-    when(ctx.queryParamAsClass("limit", Integer.class)).thenThrow(new BadRequestResponse("The limit query parameter must be a non-negative integer."));
+    when(ctx.queryParamMap()).thenReturn(Map.of("limit", List.of("-5")));
+    when(ctx.queryParam("limit")).thenReturn("-5");
 
-    Throwable exception = assertThrows(BadRequestResponse.class, () -> {
-      todoController.getTodos(ctx);
-    });
+    BadRequestResponse exception = assertThrows(
+      BadRequestResponse.class,
+      () -> todoController.getTodos(ctx));
 
-    assertEquals("The limit query parameter must be a non-negative integer.", exception.getMessage());
+    assertEquals("Limit must be a non-negative integer", exception.getMessage());
   }
 
 }
