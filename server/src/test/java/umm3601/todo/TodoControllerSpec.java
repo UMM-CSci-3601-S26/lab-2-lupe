@@ -46,10 +46,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import io.javalin.Javalin;
-import io.javalin.http.BadRequestResponse;
+// import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import io.javalin.http.NotFoundResponse;
+// import io.javalin.http.NotFoundResponse;
 import io.javalin.json.JavalinJackson;
 // import io.javalin.validation.BodyValidator;
 // import io.javalin.validation.Validation;
@@ -148,7 +148,7 @@ public class TodoControllerSpec {
   void addsRoutes() {
     Javalin mockServer = mock(Javalin.class);
     todoController.addRoutes(mockServer);
-    verify(mockServer, Mockito.atLeast(1)).get(any(), any());//come back and adjust
+    verify(mockServer, Mockito.atLeast(1)).get(any(), any());
     //verify(mockServer, Mockito.atLeastOnce()).post(any(), any());
     //verify(mockServer, Mockito.atLeastOnce()).patch(any(), any());
   }
