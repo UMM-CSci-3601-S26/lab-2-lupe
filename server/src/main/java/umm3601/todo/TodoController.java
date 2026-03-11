@@ -1,8 +1,8 @@
 package umm3601.user;
 
 import static com.mongodb.client.model.Filters.and;
-// import static com.mongodb.client.model.Filters.eq;
-// import static com.mongodb.client.model.Filters.regex;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.regex;
 
 // import java.nio.charset.StandardCharsets;
 // import java.security.MessageDigest;
@@ -16,7 +16,7 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
-// import org.bson.types.ObjectId;
+import org.bson.types.ObjectId;
 import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.client.MongoDatabase;
@@ -24,10 +24,10 @@ import com.mongodb.client.model.Sorts;
 // import com.mongodb.client.result.DeleteResult;
 
 import io.javalin.Javalin;
-// import io.javalin.http.BadRequestResponse;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-// import io.javalin.http.NotFoundResponse;
+import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
 
 public class TodoController implements Controller {
