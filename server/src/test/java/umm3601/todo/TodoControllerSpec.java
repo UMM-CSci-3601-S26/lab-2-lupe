@@ -60,6 +60,8 @@ import io.javalin.json.JavalinJackson;
 import umm3601.user.Todo;
 import umm3601.user.TodoController;
 
+@SuppressWarnings({ "MagicNumber" })
+
 public class TodoControllerSpec {
   private TodoController todoController;
 
