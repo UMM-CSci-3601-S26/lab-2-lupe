@@ -2,7 +2,7 @@ package umm3601.user;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-// import static com.mongodb.client.model.Filters.regex;
+import static com.mongodb.client.model.Filters.regex;
 
 // import java.nio.charset.StandardCharsets;
 // import java.security.MessageDigest;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 // import java.util.Map;
 // import java.util.Objects;
-// import java.util.regex.Pattern;
+import java.util.regex.Pattern;
 
 import org.bson.Document;
 import org.bson.UuidRepresentation;
@@ -37,7 +37,7 @@ public class TodoController implements Controller {
   static final String BODY_KEY = "body";
   static final String CATEGORY_KEY = "category";
   static final String LIMIT_KEY = "limit";
-
+  static final String CONTENT_KEY = "contains";
 
   private final JacksonMongoCollection<Todo> todoCollection;
 
@@ -99,6 +99,11 @@ public class TodoController implements Controller {
         .check(it -> it.equals("complete") || it.equals("incomplete"), tempString)
         .get();
       filters.add(eq(STATUS_KEY, status.equals("complete")));
+    }
+
+    if (ctx.queryParamMap().containsKey(CONTENT_KEY)) {
+      String content = ctx.queryParam(CONTENT_KEY);
+      filters.add(regex(BODY_KEY, Pattern.compile(content, Pattern.CASE_INSENSITIVE)));
     }
 
     Bson combinedFilter = filters.isEmpty() ? new Document() : and(filters);
