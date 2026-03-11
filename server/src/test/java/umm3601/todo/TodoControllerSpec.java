@@ -382,4 +382,51 @@ public class TodoControllerSpec {
     assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
   }
 
+  @Test
+  void getTodosWithCategoryOfSchool() throws IOException {
+    String category = "school";
+    when(ctx.queryParamMap()).thenReturn(Map.of("category", List.of(category)));
+    when(ctx.queryParam("category")).thenReturn(category);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(2, returnedTodos.size());
+    assertEquals("school", returnedTodos.get(0).category);
+    assertEquals("school", returnedTodos.get(1).category);
+  }
+
+  @Test
+  void getTodosWithCategoryThatIsNotInAnyTodo() throws IOException {
+    String category = "asldkfjalskdfj";
+    when(ctx.queryParamMap()).thenReturn(Map.of("category", List.of(category)));
+    when(ctx.queryParam("category")).thenReturn(category);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(0, returnedTodos.size());
+  }
+
+  @Test
+  void getTodosWithEmptyCategoryParameter() throws IOException {
+    String category = "";
+    when(ctx.queryParamMap()).thenReturn(Map.of("category", List.of(category)));
+    when(ctx.queryParam("category")).thenReturn(category);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
+  }
+
 }
