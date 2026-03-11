@@ -38,7 +38,7 @@ public class TodoController implements Controller {
   static final String CATEGORY_KEY = "category";
   static final String LIMIT_KEY = "limit";
   static final String CONTENT_KEY = "contains";
-  static final String SORT_BY_KEY = "sortby";
+  static final String ORDER_BY_KEY = "orderBy";
 
   private final JacksonMongoCollection<Todo> todoCollection;
 
@@ -123,8 +123,8 @@ public class TodoController implements Controller {
   }
 
   private Bson constructSortingOrder(Context ctx) {
-    if (ctx.queryParamMap().containsKey(SORT_BY_KEY)) {
-      String sortBy = ctx.queryParam(SORT_BY_KEY);
+    if (ctx.queryParamMap().containsKey(ORDER_BY_KEY)) {
+      String sortBy = ctx.queryParam(ORDER_BY_KEY);
 
       boolean ownerKey = sortBy.equals(OWNER_KEY);
       boolean statusKey = sortBy.equals(STATUS_KEY);
@@ -134,7 +134,7 @@ public class TodoController implements Controller {
       if (ownerKey || statusKey || bodyKey || categoryKey) {
         return Sorts.ascending(sortBy);
       } else {
-        throw new BadRequestResponse("Sort by parameter must be 'owner', 'status', 'body', or 'category'.");
+        throw new BadRequestResponse("Order by parameter must be 'owner', 'status', 'body', or 'category'.");
       }
     }
     return new Document();
