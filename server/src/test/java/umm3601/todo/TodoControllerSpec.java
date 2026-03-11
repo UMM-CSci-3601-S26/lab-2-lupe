@@ -429,4 +429,105 @@ public class TodoControllerSpec {
     assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
   }
 
+  @Test
+  void getSortedTodosWithSortByOwner() throws IOException {
+    String sortBy = "owner";
+    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
+    assertEquals("Chris", returnedTodos.get(0).owner);
+    assertEquals("Guadalupe", returnedTodos.get(1).owner);
+    assertEquals("Jamie", returnedTodos.get(2).owner);
+    assertEquals("Jamie", returnedTodos.get(3).owner);
+  }
+
+  @Test
+  void getSortedTodosWithSortByStatus() throws IOException {
+    String sortBy = "status";
+    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
+    assertEquals(false, returnedTodos.get(0).status);
+    assertEquals(true, returnedTodos.get(1).status);
+    assertEquals(true, returnedTodos.get(2).status);
+    assertEquals(true, returnedTodos.get(3).status);
+  }
+
+  @Test
+  void getSortedTodosWithSortByBody() throws IOException {
+    String sortBy = "body";
+    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
+    assertEquals("Eat more (7) vegetables.", returnedTodos.get(0).body);
+    assertEquals("Finish Lab 2.", returnedTodos.get(1).body);
+    assertEquals("Go to the gym.", returnedTodos.get(2).body);
+    assertEquals("UMM is great!", returnedTodos.get(3).body);
+  }
+
+  @Test
+  void getSortedTodosWithSortByCategory() throws IOException {
+    String sortBy = "category";
+    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
+    assertEquals("home", returnedTodos.get(0).category);
+    assertEquals("leisure", returnedTodos.get(1).category);
+    assertEquals("school", returnedTodos.get(2).category);
+    assertEquals("school", returnedTodos.get(3).category);
+  }
+
+  @Test
+  void getSortedTodosWithInvalidSortByValue() throws IOException {
+    String sortBy = "asldkfjalskdfj";
+    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    BadRequestResponse exception = assertThrows(
+      BadRequestResponse.class,
+      () -> todoController.getTodos(ctx));
+
+    assertEquals("Sort by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
+  }
+
+  @Test
+  void getSortedTodosWithEmptySortByValue() throws IOException {
+    String sortBy = "";
+    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    BadRequestResponse exception = assertThrows(
+      BadRequestResponse.class,
+      () -> todoController.getTodos(ctx));
+
+    assertEquals("Sort by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
+  }
 }
