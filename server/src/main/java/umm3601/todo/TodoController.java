@@ -80,6 +80,14 @@ public class TodoController implements Controller {
             throw new BadRequestResponse("Limit must be a non-negative integer");
         }
     }
+
+    List<Todo> matchingTodosList = todoCollection.find(filter)
+      .sort(sortingOrder)
+      .limit(limit)
+      .into(new ArrayList<>());
+
+    ctx.json(matchingTodosList);
+    ctx.status(HttpStatus.OK);
   }
 
   private Bson constructFilter(Context ctx) {
