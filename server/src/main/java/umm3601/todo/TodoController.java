@@ -80,8 +80,9 @@ public class TodoController implements Controller {
             throw new BadRequestResponse("Limit must be a non-negative integer");
         }
     }
+  }
 
-  public Bson constructFilter(Context ctx) {
+  private Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>();
     String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
 
@@ -97,7 +98,7 @@ public class TodoController implements Controller {
     return combinedFilter;
   }
 
-  public Bson constructSortingOrder(Context ctx) {
+  private Bson constructSortingOrder(Context ctx) {
     Bson sortingOrder = Sorts.ascending("owner");
     return sortingOrder;
   }
