@@ -67,8 +67,8 @@ public class TodoController implements Controller {
 
   public void getTodos(Context ctx) {
     Bson filter = constructFilter(ctx);
-    Bson sortingOrder = constructSortingOrder(ctx);
-    Integer limit = 0;
+    Bson sortingOrder = constructSortingOrder();
+    int limit = 0;
 
     if (ctx.queryParamMap().containsKey(LIMIT_KEY)) {
         try {
@@ -111,7 +111,7 @@ public class TodoController implements Controller {
     return combinedFilter;
   }
 
-  private Bson constructSortingOrder(Context ctx) {
+  private Bson constructSortingOrder() {
     Bson sortingOrder = Sorts.ascending("owner");
     return sortingOrder;
   }
