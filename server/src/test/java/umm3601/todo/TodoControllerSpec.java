@@ -121,7 +121,7 @@ public class TodoControllerSpec {
       new Document()
         .append("owner", "Pat")
         .append("status", true)
-        .append("body", "Eat more vegetables.")
+        .append("body", "Eat more (7) vegetables.")
         .append("category", "home"));
     testTodos.add(
       new Document()
@@ -223,6 +223,100 @@ public class TodoControllerSpec {
       () -> todoController.getTodos(ctx));
 
     assertEquals("Limit must be a non-negative integer", exception.getMessage());
+  }
+
+  @Test
+  void getTodosThatContainRegularString() throws IOException {
+    String searchString = "vegetables";
+    when(ctx.queryParamMap()).thenReturn(Map.of("contains", List.of(searchString)));
+    when(ctx.queryParam("contains")).thenReturn(searchString);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(1, returnedTodos.size());
+    assertEquals("Eat more (7) vegetables.", returnedTodos.get(0).body);
+  }
+
+  @Test
+  void getTodosThatContainInteger() throws IOException {
+    String searchString = "7";
+    when(ctx.queryParamMap()).thenReturn(Map.of("contains", List.of(searchString)));
+    when(ctx.queryParam("contains")).thenReturn(searchString);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(1, returnedTodos.size());
+    assertEquals("Eat more (7) vegetables.", returnedTodos.get(0).body);
+  }
+
+  @Test
+  void getTodosThatContainStringWithSpecialCharacters() throws IOException {
+    String searchString = "great!";
+    when(ctx.queryParamMap()).thenReturn(Map.of("contains", List.of(searchString)));
+    when(ctx.queryParam("contains")).thenReturn(searchString);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(1, returnedTodos.size());
+    assertEquals("UMM is great!", returnedTodos.get(0).body);
+  }
+
+  @Test
+  void getTodosThatContainIsCaseInsensitive() throws IOException {
+    String searchString = "gReAt!";
+    when(ctx.queryParamMap()).thenReturn(Map.of("contains", List.of(searchString)));
+    when(ctx.queryParam("contains")).thenReturn(searchString);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(1, returnedTodos.size());
+    assertEquals("UMM is great!", returnedTodos.get(0).body);
+  }
+
+  @Test
+  void getTodosThatContainStringThatIsNotInAnyTodo() throws IOException {
+    String searchString = "asldkfjalskdfj";
+    when(ctx.queryParamMap()).thenReturn(Map.of("contains", List.of(searchString)));
+    when(ctx.queryParam("contains")).thenReturn(searchString);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(0, returnedTodos.size());
+  }
+
+  @Test
+  void getTodosWithEmptyContainsParameter() throws IOException {
+    String searchString = "";
+    when(ctx.queryParamMap()).thenReturn(Map.of("contains", List.of(searchString)));
+    when(ctx.queryParam("contains")).thenReturn(searchString);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
   }
 
 }
