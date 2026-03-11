@@ -36,6 +36,7 @@ public class TodoController implements Controller {
   static final String STATUS_KEY = "status";
   static final String BODY_KEY = "body";
   static final String CATEGORY_KEY = "category";
+  static final String LIMIT_KEY = "limit";
 
 
   private final JacksonMongoCollection<Todo> todoCollection;
@@ -65,20 +66,16 @@ public class TodoController implements Controller {
   }
 
   public void getTodos(Context ctx) {
-    List<Bson> filters = new ArrayList<>();
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
-    String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
+    int limit = ctx.queryParamAsClass(LIMIT_KEY, Integer.class).getOrDefault(0);
 
-    if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
-      String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
-        .check(it -> it.equals("complete") || it.equals("incomplete"), tempString)
-        .get();
-      filters.add(eq(STATUS_KEY, status.equals("complete")));
+    if (limit < 0) {
+      throw new BadRequestResponse("The limit query parameter must be a non-negative integer.");
     }
 
      ArrayList<Todo> matchingTodos = todoCollection
-    .find(combinedFilter)
+    .find(combinedFilter).limit(limit)
     .sort(sortingOrder)
     .into(new ArrayList<>());
 
@@ -89,6 +86,13 @@ public class TodoController implements Controller {
 
   private Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>();
+
+    if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
+      String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
+        .check(it -> it.equals("complete") || it.equals("incomplete"), "The status query parameter must be either 'complete' or 'incomplete'.")
+        .get();
+      filters.add(eq(STATUS_KEY, status.equals("complete")));
+    }
 
     Bson combinedFilter = filters.isEmpty() ? new Document() : and(filters);
 
