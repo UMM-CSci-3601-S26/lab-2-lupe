@@ -48,9 +48,32 @@ public class TodoController implements Controller {
       UuidRepresentation.STANDARD);
     }
 
+  public void getTodo(Context ctx) {
+    String id = ctx.pathParam("id");
+    Todo todo;
+    try {
+      todo = todoCollection.find(eq("_id", new ObjectId(id))).first();
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested todo id was not a legal Mongo Object ID.");
+    }
+    if (todo == null) {
+      throw new NotFoundResponse("The requested todo was not found");
+    } else {
+      ctx.json(todo);
+      ctx.status(HttpStatus.OK);
+    }
+  }
+
   public void getTodos(Context ctx) {
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
+
+    if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
+      String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
+        .check(it -> it.equals("complete") || it.equals("incomplete"), "The status query parameter must be either 'complete' or 'incomplete'.")
+        .get();
+      filters.add(eq(STATUS_KEY, status.equals("complete")));
+    }
 
      ArrayList<Todo> matchingTodos = todoCollection
     .find(combinedFilter)
@@ -78,6 +101,7 @@ public class TodoController implements Controller {
   @Override
   public void addRoutes(Javalin server) {
     server.get(API_TODOS, this::getTodos);
+    server.get(API_TODOS + "/{id}", this::getTodo);
   }
 
 }
