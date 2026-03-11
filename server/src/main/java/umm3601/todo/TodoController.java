@@ -125,11 +125,7 @@ public class TodoController implements Controller {
   private Bson constructSortingOrder(Context ctx) {
     if (ctx.queryParamMap().containsKey(SORT_BY_KEY)) {
       String sortBy = ctx.queryParam(SORT_BY_KEY);
-      if (
-      sortBy.equals(OWNER_KEY) ||
-      sortBy.equals(STATUS_KEY) ||
-      sortBy.equals(BODY_KEY) ||
-      sortBy.equals(CATEGORY_KEY)) {
+      if (sortBy.equals(OWNER_KEY)||sortBy.equals(STATUS_KEY)||sortBy.equals(BODY_KEY)||sortBy.equals(CATEGORY_KEY)) {
         return Sorts.ascending(sortBy);
       } else {
         throw new BadRequestResponse("Sort by parameter must be 'owner', 'status', 'body', or 'category'.");
