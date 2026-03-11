@@ -68,7 +68,7 @@ public class TodoController implements Controller {
     List<Bson> filters = new ArrayList<>();
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
-    String tempString = "Status query parameter must be 'complete' or 'incomplete'."
+    String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
 
     if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
       String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
