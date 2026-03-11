@@ -81,7 +81,7 @@ public class TodoController implements Controller {
         }
     }
 
-  private Bson constructFilter(Context ctx) {
+  public Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>();
     String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
 
@@ -97,7 +97,7 @@ public class TodoController implements Controller {
     return combinedFilter;
   }
 
-  private Bson constructSortingOrder(Context ctx) {
+  public Bson constructSortingOrder(Context ctx) {
     Bson sortingOrder = Sorts.ascending("owner");
     return sortingOrder;
   }
