@@ -572,7 +572,9 @@ public class TodoControllerSpec {
     String owner = "Jamie";
     String sortBy = "category";
     String limit = "1";
-    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "sortby", List.of(sortBy), "limit", List.of(limit)));
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner),
+                                                "sortby", List.of(sortBy),
+                                                "limit", List.of(limit)));
     when(ctx.queryParam("owner")).thenReturn(owner);
     when(ctx.queryParam("sortby")).thenReturn(sortBy);
     when(ctx.queryParam("limit")).thenReturn(limit);
