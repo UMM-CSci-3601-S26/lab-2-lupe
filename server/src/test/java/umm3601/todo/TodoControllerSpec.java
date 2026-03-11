@@ -532,4 +532,59 @@ public class TodoControllerSpec {
 
     assertEquals("Sort by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
   }
+
+  @Test
+  void getTodosSortedByBodyAndFilteredByOwner() throws IOException {
+    String owner = "Jamie";
+    String sortBy = "body";
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "sortby", List.of(sortBy)));
+    when(ctx.queryParam("owner")).thenReturn(owner);
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(2, returnedTodos.size());
+    assertEquals("Eat more (7) vegetables.", returnedTodos.get(0).body);
+    assertEquals("Go to the gym.", returnedTodos.get(1).body);
+  }
+
+  @Test
+  void getTodosSortedByOwnerAndFilteredWithInvalidSortByValue() throws IOException {
+    String owner = "Jamie";
+    String sortBy = "asldkfjalskdfj";
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "sortby", List.of(sortBy)));
+    when(ctx.queryParam("owner")).thenReturn(owner);
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+
+    BadRequestResponse exception = assertThrows(
+      BadRequestResponse.class,
+      () -> todoController.getTodos(ctx));
+
+    assertEquals("Sort by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
+  }
+
+  @Test
+  void getTodosSortedByCategoryFilteredByOwnerAndLimited() throws IOException {
+    String owner = "Jamie";
+    String sortBy = "category";
+    String limit = "1";
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "sortby", List.of(sortBy), "limit", List.of(limit)));
+    when(ctx.queryParam("owner")).thenReturn(owner);
+    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParam("limit")).thenReturn(limit);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(1, returnedTodos.size());
+    assertEquals("home", returnedTodos.get(0).category);
+  }
+
 }
