@@ -71,7 +71,7 @@ public class TodoController implements Controller {
 
     if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
       String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
-        .check(it -> it.equals("complete") || it.equals("incomplete"), "The status query parameter must be either 'complete' or 'incomplete'.")
+        .check(it -> it.equals("complete") || it.equals("incomplete"), "Status param must be 'complete' or 'incomplete'.")
         .get();
       filters.add(eq(STATUS_KEY, status.equals("complete")));
     }
