@@ -434,8 +434,8 @@ public class TodoControllerSpec {
   @Test
   void getSortedTodosWithSortByOwner() throws IOException {
     String sortBy = "owner";
-    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParamMap()).thenReturn(Map.of("orderBy", List.of(sortBy)));
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     todoController.getTodos(ctx);
 
@@ -453,8 +453,8 @@ public class TodoControllerSpec {
   @Test
   void getSortedTodosWithSortByStatus() throws IOException {
     String sortBy = "status";
-    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParamMap()).thenReturn(Map.of("orderBy", List.of(sortBy)));
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     todoController.getTodos(ctx);
 
@@ -472,8 +472,8 @@ public class TodoControllerSpec {
   @Test
   void getSortedTodosWithSortByBody() throws IOException {
     String sortBy = "body";
-    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParamMap()).thenReturn(Map.of("orderBy", List.of(sortBy)));
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     todoController.getTodos(ctx);
 
@@ -491,8 +491,8 @@ public class TodoControllerSpec {
   @Test
   void getSortedTodosWithSortByCategory() throws IOException {
     String sortBy = "category";
-    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParamMap()).thenReturn(Map.of("orderBy", List.of(sortBy)));
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     todoController.getTodos(ctx);
 
@@ -510,36 +510,36 @@ public class TodoControllerSpec {
   @Test
   void getSortedTodosWithInvalidSortByValue() throws IOException {
     String sortBy = "asldkfjalskdfj";
-    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParamMap()).thenReturn(Map.of("orderBy", List.of(sortBy)));
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     BadRequestResponse exception = assertThrows(
       BadRequestResponse.class,
       () -> todoController.getTodos(ctx));
 
-    assertEquals("Sort by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
+    assertEquals("Order by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
   }
 
   @Test
   void getSortedTodosWithEmptySortByValue() throws IOException {
     String sortBy = "";
-    when(ctx.queryParamMap()).thenReturn(Map.of("sortby", List.of(sortBy)));
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParamMap()).thenReturn(Map.of("orderBy", List.of(sortBy)));
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     BadRequestResponse exception = assertThrows(
       BadRequestResponse.class,
       () -> todoController.getTodos(ctx));
 
-    assertEquals("Sort by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
+    assertEquals("Order by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
   }
 
   @Test
   void getTodosSortedByBodyAndFilteredByOwner() throws IOException {
     String owner = "Jamie";
     String sortBy = "body";
-    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "sortby", List.of(sortBy)));
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "orderBy", List.of(sortBy)));
     when(ctx.queryParam("owner")).thenReturn(owner);
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     todoController.getTodos(ctx);
 
@@ -556,15 +556,15 @@ public class TodoControllerSpec {
   void getTodosSortedByOwnerAndFilteredWithInvalidSortByValue() throws IOException {
     String owner = "Jamie";
     String sortBy = "asldkfjalskdfj";
-    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "sortby", List.of(sortBy)));
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner), "orderBy", List.of(sortBy)));
     when(ctx.queryParam("owner")).thenReturn(owner);
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
 
     BadRequestResponse exception = assertThrows(
       BadRequestResponse.class,
       () -> todoController.getTodos(ctx));
 
-    assertEquals("Sort by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
+    assertEquals("Order by parameter must be 'owner', 'status', 'body', or 'category'.", exception.getMessage());
   }
 
   @Test
@@ -573,10 +573,10 @@ public class TodoControllerSpec {
     String sortBy = "category";
     String limit = "1";
     when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner),
-                                                "sortby", List.of(sortBy),
+                                                "orderBy", List.of(sortBy),
                                                 "limit", List.of(limit)));
     when(ctx.queryParam("owner")).thenReturn(owner);
-    when(ctx.queryParam("sortby")).thenReturn(sortBy);
+    when(ctx.queryParam("orderBy")).thenReturn(sortBy);
     when(ctx.queryParam("limit")).thenReturn(limit);
 
     todoController.getTodos(ctx);
