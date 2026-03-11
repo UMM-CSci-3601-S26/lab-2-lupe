@@ -36,6 +36,7 @@ public class TodoController implements Controller {
   static final String STATUS_KEY = "status";
   static final String BODY_KEY = "body";
   static final String CATEGORY_KEY = "category";
+  static final String LIMIT_KEY = "limit";
 
 
   private final JacksonMongoCollection<Todo> todoCollection;
@@ -65,9 +66,32 @@ public class TodoController implements Controller {
   }
 
   public void getTodos(Context ctx) {
-    List<Bson> filters = new ArrayList<>();
-    Bson combinedFilter = constructFilter(ctx);
+    Bson filter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
+    Integer limit = 0;
+
+    if (ctx.queryParamMap().containsKey(LIMIT_KEY)) {
+        try {
+            limit = Integer.parseInt(ctx.queryParam(LIMIT_KEY));
+            if (limit < 0) {
+                throw new BadRequestResponse("Limit must be a non-negative integer");
+            }
+        } catch (NumberFormatException e) {
+            throw new BadRequestResponse("Limit must be a non-negative integer");
+        }
+    }
+
+    List<Todo> matchingTodosList = todoCollection.find(filter)
+      .sort(sortingOrder)
+      .limit(limit)
+      .into(new ArrayList<>());
+
+    ctx.json(matchingTodosList);
+    ctx.status(HttpStatus.OK);
+  }
+
+  private Bson constructFilter(Context ctx) {
+    List<Bson> filters = new ArrayList<>();
     String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
 
     if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
@@ -76,19 +100,6 @@ public class TodoController implements Controller {
         .get();
       filters.add(eq(STATUS_KEY, status.equals("complete")));
     }
-
-     ArrayList<Todo> matchingTodos = todoCollection
-    .find(combinedFilter)
-    .sort(sortingOrder)
-    .into(new ArrayList<>());
-
-    ctx.json(matchingTodos);
-
-    ctx.status(HttpStatus.OK);
-  }
-
-  private Bson constructFilter(Context ctx) {
-    List<Bson> filters = new ArrayList<>();
 
     Bson combinedFilter = filters.isEmpty() ? new Document() : and(filters);
 
