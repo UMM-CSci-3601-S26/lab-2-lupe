@@ -119,7 +119,7 @@ public class TodoControllerSpec {
         .append("category", "school"));
     testTodos.add(
       new Document()
-        .append("owner", "Pat")
+        .append("owner", "Jamie")
         .append("status", true)
         .append("body", "Eat more (7) vegetables.")
         .append("category", "home"));
@@ -309,6 +309,69 @@ public class TodoControllerSpec {
     String searchString = "";
     when(ctx.queryParamMap()).thenReturn(Map.of("contains", List.of(searchString)));
     when(ctx.queryParam("contains")).thenReturn(searchString);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(database.getCollection("todos").countDocuments(), returnedTodos.size());
+  }
+
+  @Test
+  void getTodosOwnedByChris() throws IOException {
+    String owner = "Chris";
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner)));
+    when(ctx.queryParam("owner")).thenReturn(owner);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(1, returnedTodos.size());
+    assertEquals("Chris", returnedTodos.get(0).owner);
+  }
+
+  @Test
+  void getTodosOwnedByJamie() throws IOException {
+    String owner = "Jamie";
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner)));
+    when(ctx.queryParam("owner")).thenReturn(owner);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(2, returnedTodos.size());
+    assertEquals("Jamie", returnedTodos.get(0).owner);
+    assertEquals("Jamie", returnedTodos.get(1).owner);
+  }
+
+  @Test
+  void getTodosWithOwnerThatIsNotInAnyTodo() throws IOException {
+    String owner = "asldkfjalskdfj";
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner)));
+    when(ctx.queryParam("owner")).thenReturn(owner);
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    List<Todo> returnedTodos = todoArrayListCaptor.getValue();
+    assertEquals(0, returnedTodos.size());
+  }
+
+  @Test
+  void getTodosWithEmptyOwnerParameter() throws IOException {
+    String owner = "";
+    when(ctx.queryParamMap()).thenReturn(Map.of("owner", List.of(owner)));
+    when(ctx.queryParam("owner")).thenReturn(owner);
 
     todoController.getTodos(ctx);
 
