@@ -1,7 +1,7 @@
 package umm3601.user;
 
 import static com.mongodb.client.model.Filters.and;
-// import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.eq;
 // import static com.mongodb.client.model.Filters.regex;
 
 // import java.nio.charset.StandardCharsets;
@@ -16,7 +16,7 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
-// import org.bson.types.ObjectId;
+import org.bson.types.ObjectId;
 import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.client.MongoDatabase;
@@ -24,7 +24,7 @@ import com.mongodb.client.model.Sorts;
 // import com.mongodb.client.result.DeleteResult;
 
 import io.javalin.Javalin;
-// import io.javalin.http.BadRequestResponse;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
@@ -92,10 +92,11 @@ public class TodoController implements Controller {
 
   private Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>();
+    String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
 
     if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
       String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
-        .check(it -> it.equals("complete") || it.equals("incomplete"), "The status query parameter must be either 'complete' or 'incomplete'.")
+        .check(it -> it.equals("complete") || it.equals("incomplete"), tempString)
         .get();
       filters.add(eq(STATUS_KEY, status.equals("complete")));
     }
