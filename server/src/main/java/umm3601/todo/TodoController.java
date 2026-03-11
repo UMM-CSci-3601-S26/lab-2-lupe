@@ -86,7 +86,7 @@ public class TodoController implements Controller {
 
   private Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>();
-    String tempString = "Status query parameter must be 'complete' or 'incomplete'."
+    String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
 
     if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
       String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
