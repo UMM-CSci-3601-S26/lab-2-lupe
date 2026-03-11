@@ -1,33 +1,33 @@
 package umm3601.user;
 
 import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.regex;
+// import static com.mongodb.client.model.Filters.eq;
+// import static com.mongodb.client.model.Filters.regex;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+// import java.nio.charset.StandardCharsets;
+// import java.security.MessageDigest;
+// import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
+// import java.util.Map;
+// import java.util.Objects;
+// import java.util.regex.Pattern;
 
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
+// import org.bson.types.ObjectId;
 import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
-import com.mongodb.client.result.DeleteResult;
+// import com.mongodb.client.result.DeleteResult;
 
 import io.javalin.Javalin;
-import io.javalin.http.BadRequestResponse;
+// import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import io.javalin.http.NotFoundResponse;
+// import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
 
 public class TodoController implements Controller {
@@ -48,22 +48,6 @@ public class TodoController implements Controller {
       UuidRepresentation.STANDARD);
     }
 
-  public void getTodo(Context ctx) {
-    String id = ctx.pathParam("id");
-    Todo todo;
-    try {
-      todo = todoCollection.find(eq("_id", new ObjectId(id))).first();
-    } catch (IllegalArgumentException e) {
-      throw new BadRequestResponse("The requested todo id was not a legal Mongo Object ID.");
-    }
-    if (todo == null) {
-      throw new NotFoundResponse("The requested todo was not found");
-    } else {
-      ctx.json(todo);
-      ctx.status(HttpStatus.OK);
-    }
-  }
-
   public void getTodos(Context ctx) {
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
@@ -81,13 +65,6 @@ public class TodoController implements Controller {
   private Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>();
 
-    if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
-      String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
-        .check(it -> it.equals("complete") || it.equals("incomplete"), "The status query parameter must be either 'complete' or 'incomplete'.")
-        .get();
-      filters.add(eq(STATUS_KEY, status.equals("complete")));
-    }
-
     Bson combinedFilter = filters.isEmpty() ? new Document() : and(filters);
 
     return combinedFilter;
@@ -101,7 +78,6 @@ public class TodoController implements Controller {
   @Override
   public void addRoutes(Javalin server) {
     server.get(API_TODOS, this::getTodos);
-    server.get(API_TODOS + "/{id}", this::getTodo);
   }
 
 }
