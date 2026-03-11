@@ -111,6 +111,11 @@ public class TodoController implements Controller {
       filters.add(regex(OWNER_KEY, Pattern.compile(owner, Pattern.CASE_INSENSITIVE)));
     }
 
+    if (ctx.queryParamMap().containsKey(CATEGORY_KEY)) {
+      String category = ctx.queryParam(CATEGORY_KEY);
+      filters.add(regex(CATEGORY_KEY, Pattern.compile(category, Pattern.CASE_INSENSITIVE)));
+    }
+
     Bson combinedFilter = filters.isEmpty() ? new Document() : and(filters);
 
     return combinedFilter;
