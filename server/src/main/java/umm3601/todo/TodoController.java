@@ -2,16 +2,16 @@ package umm3601.user;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.regex;
+// import static com.mongodb.client.model.Filters.regex;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+// import java.nio.charset.StandardCharsets;
+// import java.security.MessageDigest;
+// import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
+// import java.util.Map;
+// import java.util.Objects;
+// import java.util.regex.Pattern;
 
 import org.bson.Document;
 import org.bson.UuidRepresentation;
@@ -21,7 +21,7 @@ import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
-import com.mongodb.client.result.DeleteResult;
+// import com.mongodb.client.result.DeleteResult;
 
 import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
@@ -66,30 +66,37 @@ public class TodoController implements Controller {
   }
 
   public void getTodos(Context ctx) {
-    Bson combinedFilter = constructFilter(ctx);
+    Bson filter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
-    int limit = ctx.queryParamAsClass(LIMIT_KEY, Integer.class).getOrDefault(0);
+    Integer limit = 0;
 
-    if (limit < 0) {
-      throw new BadRequestResponse("The limit query parameter must be a non-negative integer.");
+    if (ctx.queryParamMap().containsKey(LIMIT_KEY)) {
+        try {
+            limit = Integer.parseInt(ctx.queryParam(LIMIT_KEY));
+            if (limit < 0) {
+                throw new BadRequestResponse("Limit must be a non-negative integer");
+            }
+        } catch (NumberFormatException e) {
+            throw new BadRequestResponse("Limit must be a non-negative integer");
+        }
     }
 
-     ArrayList<Todo> matchingTodos = todoCollection
-    .find(combinedFilter).limit(limit)
-    .sort(sortingOrder)
-    .into(new ArrayList<>());
+    List<Todo> matchingTodosList = todoCollection.find(filter)
+      .sort(sortingOrder)
+      .limit(limit)
+      .into(new ArrayList<>());
 
-    ctx.json(matchingTodos);
-
+    ctx.json(matchingTodosList);
     ctx.status(HttpStatus.OK);
   }
 
   private Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>();
+    String tempString = "Status query parameter must be 'complete' or 'incomplete'.";
 
     if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
       String status = ctx.queryParamAsClass(STATUS_KEY, String.class)
-        .check(it -> it.equals("complete") || it.equals("incomplete"), "The status query parameter must be either 'complete' or 'incomplete'.")
+        .check(it -> it.equals("complete") || it.equals("incomplete"), tempString)
         .get();
       filters.add(eq(STATUS_KEY, status.equals("complete")));
     }
