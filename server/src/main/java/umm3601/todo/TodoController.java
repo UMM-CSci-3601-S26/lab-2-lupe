@@ -2,7 +2,7 @@ package umm3601.user;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.regex;
+// import static com.mongodb.client.model.Filters.regex;
 
 // import java.nio.charset.StandardCharsets;
 // import java.security.MessageDigest;
@@ -65,6 +65,7 @@ public class TodoController implements Controller {
   }
 
   public void getTodos(Context ctx) {
+    List<Bson> filters = new ArrayList<>();
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
 
